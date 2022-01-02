@@ -3,13 +3,20 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "serve": "vue-cli-service serve",
+    "start": "vue-cli-service serve ",
+    "json-start": "json-server --watch db.json --port 3000",
     "build": "vue-cli-service build",
-    "lint": "vue-cli-service lint"
+    "lint": "vue-cli-service lint",
+    "license": "MIT"
   },
   "dependencies": {
+    "axios": "^0.24.0",
     "core-js": "^3.6.5",
+    "json-server": "^0.17.0",
+    "moment": "^2.29.1",
+    "normalize.css": "^8.0.1",
     "vue": "^3.0.0",
+    "vue-axios": "^3.4.0",
     "vue-router": "^4.0.0-0",
     "vuex": "^4.0.0-0"
   },
