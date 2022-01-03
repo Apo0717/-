@@ -1,5 +1,11 @@
 <template>
   <div>
+    <div class="header-wrap">
+      <div class="header-title">110年12月</div>
+      <div class="header-info">
+        共 {{ allItem.itemNum }} 張，總金額{{ allItem.amount }}元
+      </div>
+    </div>
     <div class="item-row" v-for="(i, k) in itemData.arr" :key="k">
       <div class="type">
         {{ i.showWay }}
@@ -26,17 +32,22 @@ import moment from "moment";
 
 export default {
   name: "Home",
+  props: ["itemData.arr"],
   components: {},
   setup() {
     const itemData = reactive({
       arr: [],
     });
 
-    console.log(this); // 會得到 undefined
+    const allItem = reactive({
+      amount: 0,
+      itemNum: "",
+    });
+
     const callData = () => {
       let handleData = [];
       apiHelper.get(apiHelper.apiServers.url, "invoices").then((res) => {
-        console.log(res, "11");
+        console.log(res, "get");
 
         handleData = res.map((e) => {
           let check = e.status == "已確認" ? true : false;
@@ -47,11 +58,20 @@ export default {
             showSeller: check ? e.sellerName : "無店家資料",
             showWay: check ? (e.type == 0 ? "載具" : "電子") : e.status, //假設載具為1
             showAmount: check ? e.amount : "--",
+            addAmount: check ? e.amount : 0,
           };
         });
 
         itemData.arr = handleData;
-        console.log(itemData, "22");
+        console.log(handleData, "22");
+
+        for (let i = 0; i < itemData.arr.length; i++) {
+          allItem.amount += itemData.arr[i].addAmount;
+        }
+
+        allItem.itemNum = itemData.arr.length;
+
+        console.log(allItem.amount, "錢錢");
       });
     };
 
@@ -59,7 +79,7 @@ export default {
       callData();
     });
 
-    return { itemData };
+    return { itemData, allItem };
   },
 };
 </script>
