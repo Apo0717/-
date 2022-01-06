@@ -6,9 +6,14 @@
         共 {{ allItem.itemNum }} 張，總金額{{ allItem.amount }}元
       </div>
     </div>
-    <div class="item-row" v-for="(i, k) in itemData.arr" :key="k">
+    <div
+      class="item-row"
+      v-for="(i, k) in itemData.arr"
+      :key="k"
+      @click="i.click = !i.click"
+    >
       <div class="type">
-        {{ i.showWay }}
+        <div class="status">{{ i.showWay }}</div>
         <div class="date">{{ i.showTime }}</div>
       </div>
       <div class="info">
@@ -16,6 +21,15 @@
         <div class="sellerName">{{ i.showSeller }}</div>
       </div>
       <div class="price">{{ i.showAmount }}元</div>
+      <light-box
+        v-show="i.click"
+        :showWay="i.showWay"
+        :invNum="i.invNum"
+        :time="i.time"
+        :showSeller="i.showSeller"
+        :showDetais="i.showDetais"
+        :showAmount="i.showAmount"
+      ></light-box>
     </div>
     <div class="key-in">
       <div class="qr-code">掃描輸入</div>
@@ -29,11 +43,11 @@
 import { reactive, onMounted } from "vue";
 import apiHelper from "../utils/apiHelper";
 import moment from "moment";
+import LightBox from "../components/LightBox.vue";
 
 export default {
   name: "Home",
-  props: ["itemData.arr"],
-  components: {},
+  components: { LightBox },
   setup() {
     const itemData = reactive({
       arr: [],
@@ -59,6 +73,8 @@ export default {
             showWay: check ? (e.type == 0 ? "載具" : "電子") : e.status, //假設載具為1
             showAmount: check ? e.amount : "--",
             addAmount: check ? e.amount : 0,
+            showDetais: check ? e.details : null,
+            click: false,
           };
         });
 

@@ -1,5 +1,6 @@
 <template>
   <div>
+    <div class="go-back" @click="goBack()">????</div>
     <label for="manualinput">
       <div class="manual-input-info" id="manualinput">
         <div class="input-row">
@@ -23,7 +24,6 @@
         <div class="input-row">
           開立時間
           <div class="input-row">
-
             <!-- 西元年 -->
             <label
               ><input
@@ -69,7 +69,9 @@
                 maxlength="2"
                 v-model="day.val"
                 @focus="dayClean()"
-                :disabled="year.val.length !== 4 || !month.val || month.val == 0"
+                :disabled="
+                  year.val.length !== 4 || !month.val || month.val == 0
+                "
             /></label>
             <datalist id="day-option">
               <option
@@ -96,12 +98,17 @@
 </template>
 <script>
 import { reactive, onMounted, watch } from "vue";
+import { useRouter } from "vue-router";
 import apiHelper from "../utils/apiHelper";
 
 export default {
   name: "Input",
   components: {},
   setup() {
+    const itemData = reactive({
+      arr: [],
+    });
+
     const number1 = reactive({
       val: "",
     });
@@ -138,6 +145,17 @@ export default {
       option: [],
       errMsg: false,
     });
+
+    //call資料
+    const callData = () => {
+      apiHelper.get(apiHelper.apiServers.url, "invoices").then((res) => {
+        itemData.arr = res;
+        console.log(itemData.arr, "itemData.arr");
+        console.log(itemData.arr[0], "itemData的內容");
+        // let maxId = Math.max(...itemData.arr.map(p => p.id))
+        // console.log(maxId, "最大ID");
+      });
+    };
 
     // 清空字串
     const cleanstring = () => {
@@ -184,7 +202,7 @@ export default {
       () => year.val,
       (val) => {
         console.log("西元年", val);
-        // year.val = year.val.replace(/\D/g, "");
+        year.val = year.val.replace(/\D/g, "");
         let i = new Date();
         let ii = i.getFullYear();
         if (ii < year.val) {
@@ -199,7 +217,7 @@ export default {
       () => month.val,
       (val) => {
         console.log("月", val);
-        // month.val = month.val.replace(/\D/g, "");
+        month.val = month.val.replace(/\D/g, "");
         if (12 < month.val) {
           console.log("不可以13");
           month.val = 12;
@@ -214,7 +232,7 @@ export default {
       () => day.val,
       (val) => {
         console.log("日", val);
-        // day.val = day.val.replace(/\D/g, "");
+        day.val = day.val.replace(/\D/g, "");
         let big = day.option[day.option.length - 1];
         console.log("最大日", big);
         if (day.val > 10 && day.val > big) {
@@ -230,7 +248,7 @@ export default {
       for (let i = 1950; i <= dd; i++) {
         year.option.push(i);
       }
-      year.option = year.option.reverse()
+      year.option = year.option.reverse();
     };
 
     // 日 option
@@ -264,15 +282,17 @@ export default {
         day.val = day.val.padStart(2, 0);
       }
 
-      console.log(year.val, "輸入年");
-      console.log(month.val, "輸入月");
-      console.log(day.val, "輸入日");
+      // console.log(year.val, "輸入年");
+      // console.log(month.val, "輸入月");
+      // console.log(day.val, "輸入日");
 
       let inputNum = number1.val + number2.val;
       let timeAfter =
         year.val + "-" + month.val + "-" + day.val + " " + "00:00:00";
+      let maxId = Math.max(...itemData.arr.map((p) => p.id));
 
       let postArr = {
+        id: maxId + 1,
         invNum: inputNum,
         status: "驗證中",
         time: timeAfter,
@@ -288,12 +308,19 @@ export default {
         });
     };
 
+    const router = useRouter();
+
+    const goBack = () => {
+      router.go(-1);
+    };
+
     onMounted(() => {
+      callData();
       yearNum();
-      // dayNum();
     });
 
     return {
+      callData,
       number1,
       number2,
       year,
@@ -304,6 +331,7 @@ export default {
       yearClean,
       monthClean,
       dayClean,
+      goBack,
     };
   },
 };
