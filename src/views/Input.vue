@@ -1,12 +1,19 @@
 <template>
-  <div>
-    <div class="go-back" @click="goBack()">????</div>
+  <div class="manual-input">
+    <div class="go-back-wrap">
+      <div class="go-back" @click="goBack()">
+        <div class="go-back-icon"></div>
+      </div>
+      手動輸入發票
+    </div>
+
     <label for="manualinput">
       <div class="manual-input-info" id="manualinput">
-        <div class="input-row">
-          輸入發票號碼
-          <div class="input-row">
+        <div>
+          <div class="input-row">輸入發票號碼</div>
+          <div class="input-row input-row-time">
             <input
+              class="input-en"
               type="text"
               placeholder="大寫英文"
               v-model="number1.val"
@@ -14,6 +21,7 @@
               onfocus="if(this.value == this.defaultValue) this.value = ''"
             />
             <input
+              class="input-num"
               type="text"
               placeholder="8碼發票號碼"
               v-model="number2.val"
@@ -21,69 +29,79 @@
             />
           </div>
         </div>
-        <div class="input-row">
-          開立時間
-          <div class="input-row">
+        <div>
+          <div class="input-row">開立時間</div>
+          <div class="input-row input-row-time">
             <!-- 西元年 -->
-            <label
-              ><input
-                list="year-option"
-                name="year-option"
-                placeholder="西元年"
-                maxlength="4"
-                v-model="year.val"
-                @focus="yearClean()"
-            /></label>
-            <datalist id="year-option">
-              <option
-                :value="y"
-                v-for="(y, yk) in year.option"
-                :key="yk"
-              ></option>
-            </datalist>
+            <div class="input-year">
+              <label
+                ><input
+                  list="year-option"
+                  name="year-option"
+                  placeholder="西元年"
+                  maxlength="4"
+                  v-model="year.val"
+                  @focus="yearClean()"
+                  oninput="value=value.replace(/[^\d]/g,'')"
+              /></label>
+              <datalist id="year-option">
+                <option
+                  :value="y"
+                  v-for="(y, yk) in year.option"
+                  :key="yk"
+                ></option>
+              </datalist>
+            </div>
 
             <!-- 月份 -->
-            <label
-              ><input
-                list="month-option"
-                name="month-option"
-                placeholder="月份"
-                maxlength="2"
-                v-model="month.val"
-                @focus="monthClean()"
-            /></label>
-            <datalist id="month-option">
-              <option
-                :value="i"
-                v-for="(i, k) in month.option"
-                :key="k"
-              ></option>
-            </datalist>
+            <div class="input-time">
+              <label
+                ><input
+                  list="month-option"
+                  name="month-option"
+                  placeholder="月份"
+                  maxlength="2"
+                  v-model="month.val"
+                  @focus="monthClean()"
+                  oninput="value=value.replace(/[^\d]/g,'')"
+              /></label>
+              <datalist id="month-option">
+                <option
+                  :value="i"
+                  v-for="(i, k) in month.option"
+                  :key="k"
+                ></option>
+              </datalist>
+            </div>
 
             <!-- 日期 -->
-            <label
-              ><input
-                list="day-option"
-                name="day-option"
-                placeholder="日期"
-                maxlength="2"
-                v-model="day.val"
-                @focus="dayClean()"
-                :disabled="
-                  year.val.length !== 4 || !month.val || month.val == 0
-                "
-            /></label>
-            <datalist id="day-option">
-              <option
-                :value="t"
-                v-for="(t, tk) in day.option"
-                :key="tk"
-              ></option>
-            </datalist>
+            <div class="input-time">
+              <label
+                ><input
+                  list="day-option"
+                  name="day-option"
+                  placeholder="日期"
+                  maxlength="2"
+                  v-model="day.val"
+                  @focus="dayClean()"
+                  :disabled="
+                    year.val.length !== 4 || !month.val || month.val == 0
+                  "
+                  oninput="value=value.replace(/[^\d]/g,'')"
+              /></label>
+              <datalist id="day-option">
+                <option
+                  :value="t"
+                  v-for="(t, tk) in day.option"
+                  :key="tk"
+                ></option>
+              </datalist>
+            </div>
           </div>
         </div>
       </div>
       <input
+        class="btn-submit"
         type="submit"
         @click="postData()"
         :disabled="
@@ -91,7 +109,8 @@
           number2.val.length !== 8 ||
           !year.val ||
           !month.val ||
-          !day.val"
+          !day.val
+        "
       />
     </label>
   </div>
@@ -152,8 +171,6 @@ export default {
         itemData.arr = res;
         console.log(itemData.arr, "itemData.arr");
         console.log(itemData.arr[0], "itemData的內容");
-        // let maxId = Math.max(...itemData.arr.map(p => p.id))
-        // console.log(maxId, "最大ID");
       });
     };
 
@@ -185,7 +202,6 @@ export default {
         console.log("英文", val);
         number1.val = number1.val.replace(/[^a-zA-Z]/g, "").toUpperCase();
       }
-      // { deep: true }
     );
 
     //監聽輸入-數字
@@ -197,16 +213,19 @@ export default {
       }
     );
 
-    //監聽輸入-強制數字4位小於現在年
+    //監聽輸入-年
+    //強制數字4位小於現在年
     watch(
       () => year.val,
       (val) => {
         console.log("西元年", val);
-        year.val = year.val.replace(/\D/g, "");
         let i = new Date();
         let ii = i.getFullYear();
         if (ii < year.val) {
           year.val = ii;
+        }
+        if (year.val.length > 3 && year.val < 1950) {
+          year.val = 1950;
         }
       }
     );
@@ -217,7 +236,7 @@ export default {
       () => month.val,
       (val) => {
         console.log("月", val);
-        month.val = month.val.replace(/\D/g, "");
+        // month.val = month.val.replace(/\D/g, "");
         if (12 < month.val) {
           console.log("不可以13");
           month.val = 12;
@@ -232,7 +251,7 @@ export default {
       () => day.val,
       (val) => {
         console.log("日", val);
-        day.val = day.val.replace(/\D/g, "");
+        // day.val = day.val.replace(/\D/g, "");
         let big = day.option[day.option.length - 1];
         console.log("最大日", big);
         if (day.val > 10 && day.val > big) {
@@ -267,11 +286,6 @@ export default {
 
     // POST發票資料(新增資料)
     const postData = () => {
-      // 強制年不可以小於發票起始年
-      if (year.val.length < 4 && year.val < 1950) {
-        year.val = 1950;
-      }
-
       // 強制輸入的月份一定是2位數
       if (month.val.length < 2) {
         month.val = month.val.padStart(2, 0);

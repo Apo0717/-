@@ -1,10 +1,11 @@
 <template>
   <div>
-    <header>
-      <div class="logo"></div>
-    </header>
+    <div>
+      <div class="container">
+        <router-view />
+      </div>
+    </div>
   </div>
-  <router-view />
 </template>
 
 <style lang="scss">
