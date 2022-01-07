@@ -43,6 +43,7 @@
                   v-model="year.val"
                   @focus="yearClean()"
                   oninput="value=value.replace(/[^\d]/g,'')"
+                  autocomplete="off"
               /></label>
               <datalist id="year-option">
                 <option
@@ -64,6 +65,7 @@
                   v-model="month.val"
                   @focus="monthClean()"
                   oninput="value=value.replace(/[^\d]/g,'')"
+                  autocomplete="off"
               /></label>
               <datalist id="month-option">
                 <option
@@ -88,6 +90,7 @@
                     year.val.length !== 4 || !month.val || month.val == 0
                   "
                   oninput="value=value.replace(/[^\d]/g,'')"
+                  autocomplete="off"
               /></label>
               <datalist id="day-option">
                 <option
@@ -109,8 +112,7 @@
           number2.val.length !== 8 ||
           !year.val ||
           !month.val ||
-          !day.val
-        "
+          !day.val"
       />
     </label>
   </div>
@@ -143,26 +145,13 @@ export default {
 
     const month = reactive({
       val: "",
-      option: [
-        "01",
-        "02",
-        "03",
-        "04",
-        "05",
-        "06",
-        "07",
-        "08",
-        "09",
-        "10",
-        "11",
-        "12",
-      ],
+      option: [],
+      yo: [1, 2, 3],
     });
 
     const day = reactive({
       val: "",
       option: [],
-      errMsg: false,
     });
 
     //call資料
@@ -223,8 +212,7 @@ export default {
         let ii = i.getFullYear();
         if (ii < year.val) {
           year.val = ii;
-        }
-        if (year.val.length > 3 && year.val < 1950) {
+        } else if (year.val.length > 3 && year.val < 1950) {
           year.val = 1950;
         }
       }
@@ -238,8 +226,10 @@ export default {
         console.log("月", val);
         // month.val = month.val.replace(/\D/g, "");
         if (12 < month.val) {
-          console.log("不可以13");
+          // console.log("不可以13");
           month.val = 12;
+        } else if (month.val.length > 1 && month.val < 1) {
+          month.val = 1;
         }
         dayNum();
       }
@@ -268,6 +258,13 @@ export default {
         year.option.push(i);
       }
       year.option = year.option.reverse();
+    };
+
+    // 月 option
+    const monthNum = () => {
+      for (let i = 1; i < 13; i++) {
+        month.option.push(i);
+      }
     };
 
     // 日 option
@@ -331,6 +328,7 @@ export default {
     onMounted(() => {
       callData();
       yearNum();
+      monthNum();
     });
 
     return {

@@ -78,12 +78,21 @@ export default {
     const openClick = (i) => {
       infoOpen.click = !infoOpen.click;
       infoOpen.dataArr = i;
-      console.log(i, "讓你看看我長怎樣");
+      // console.log(i, "讓你看看我長怎樣");
     };
 
     const closeClick = () => {
       infoOpen.click = !infoOpen.click;
       infoOpen.dataArr = {};
+    };
+
+    const addAll = () => {
+      for (let i = 0; i < itemData.arr.length; i++) {
+        allItem.amount += parseInt(itemData.arr[i].addAmount);
+      }
+      // 千位符
+      allItem.amount = allItem.amount.toLocaleString();
+      allItem.itemNum = itemData.arr.length.toLocaleString();
     };
 
     const callData = () => {
@@ -108,17 +117,8 @@ export default {
 
         itemData.arr = handleData;
         console.log(handleData, "22");
-
-        for (let i = 0; i < itemData.arr.length; i++) {
-          allItem.amount += itemData.arr[i].addAmount;
-        }
-
-        // 千位符
-        allItem.amount = allItem.amount.toLocaleString();
-
-        allItem.itemNum = itemData.arr.length.toLocaleString();
-
         // console.log(allItem.amount, "錢錢");
+        addAll()
       });
     };
 
@@ -131,6 +131,7 @@ export default {
           alert("此筆資料已刪除");
           // 重新渲染資料
           closeClick();
+          addAll();
           callData();
         })
         .catch((err) => {
