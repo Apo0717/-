@@ -112,11 +112,13 @@
           number2.val.length !== 8 ||
           !year.val ||
           !month.val ||
-          !day.val"
+          !day.val
+        "
       />
     </label>
   </div>
 </template>
+
 <script>
 import { reactive, onMounted, watch } from "vue";
 import { useRouter } from "vue-router";

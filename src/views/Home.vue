@@ -75,6 +75,11 @@ export default {
       dataArr: [],
     });
 
+    const nowtime = reactive({
+      ROCYear: "110",
+      month: "12",
+    });
+
     const openClick = (i) => {
       infoOpen.click = !infoOpen.click;
       infoOpen.dataArr = i;
@@ -93,6 +98,7 @@ export default {
       });
     };
 
+    //發票數量 與 總金額
     const addAll = () => {
       allItem.amount = 0;
       for (let i = 0; i < itemData.arr.length; i++) {
@@ -105,6 +111,14 @@ export default {
       allItem.itemNum = itemData.arr.length.toLocaleString();
     };
 
+    // 篩選今年的表單
+    const filterItem = () => {
+      itemData.arr = itemData.arr.filter((e) => {
+        return e.ROCYear == nowtime.ROCYear && e.theMonth == nowtime.month;
+      });
+      console.log(itemData.arr, "被篩過後");
+    };
+
     const callData = () => {
       let handleData = [];
       apiHelper.get(apiHelper.apiServers.url, "invoices").then((res) => {
@@ -115,6 +129,8 @@ export default {
           return {
             ...e,
             showTime: moment(e.time).format("MM/DD"),
+            ROCYear: moment(e.time).format("YYYY") - 1911,
+            theMonth: moment(e.time).format("MM"),
             showTitle: check ? e.details[0].description : e.invNum,
             showSeller: check ? e.sellerName : "無店家資料",
             showWay: check ? (e.type == 0 ? "載具" : "電子") : e.status, //假設載具為1
@@ -126,8 +142,9 @@ export default {
         });
 
         itemData.arr = handleData;
-        console.log(handleData, "22");
-        // console.log(allItem.amount, "錢錢");
+        // console.log(handleData, "22");
+
+        filterItem();
         sortItem();
         addAll();
       });
@@ -153,7 +170,15 @@ export default {
       callData();
     });
 
-    return { itemData, allItem, del, infoOpen, openClick, closeClick };
+    return {
+      itemData,
+      allItem,
+      del,
+      infoOpen,
+      openClick,
+      closeClick,
+      nowtime,
+    };
   },
 };
 </script>
