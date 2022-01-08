@@ -86,9 +86,19 @@ export default {
       infoOpen.dataArr = {};
     };
 
+    //項目時間排序
+    const sortItem = () => {
+      itemData.arr.sort(function (a, b) {
+        return a.time < b.time ? 1 : -1;
+      });
+    };
+
     const addAll = () => {
+      allItem.amount = 0;
       for (let i = 0; i < itemData.arr.length; i++) {
-        allItem.amount += parseInt(itemData.arr[i].addAmount);
+        allItem.amount += Number(itemData.arr[i].addAmount);
+        console.log(itemData.arr[i].addAmount, "夭壽喔");
+        console.log(allItem.amount, "妖魔鬼怪ㄟ");
       }
       // 千位符
       allItem.amount = allItem.amount.toLocaleString();
@@ -109,7 +119,7 @@ export default {
             showSeller: check ? e.sellerName : "無店家資料",
             showWay: check ? (e.type == 0 ? "載具" : "電子") : e.status, //假設載具為1
             showAmount: check ? e.amount.toLocaleString() : "--",
-            addAmount: check ? e.amount : 0,
+            addAmount: check ? Number(e.amount) : Number(0),
             showDetais: check ? e.details : null,
             showCss: check,
           };
@@ -118,7 +128,8 @@ export default {
         itemData.arr = handleData;
         console.log(handleData, "22");
         // console.log(allItem.amount, "錢錢");
-        addAll()
+        sortItem();
+        addAll();
       });
     };
 
@@ -131,7 +142,6 @@ export default {
           alert("此筆資料已刪除");
           // 重新渲染資料
           closeClick();
-          addAll();
           callData();
         })
         .catch((err) => {
