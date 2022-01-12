@@ -52,7 +52,7 @@
 <script>
 import { reactive, onMounted } from "vue";
 import apiHelper from "../utils/apiHelper";
-import moment from "moment";
+import dayjs from 'dayjs'
 import LightBox from "../components/LightBox.vue";
 import axios from "axios";
 import SvgClose from "../components/SvgClose.vue";
@@ -128,9 +128,9 @@ export default {
           let check = e.status == "已確認" ? true : false;
           return {
             ...e,
-            showTime: moment(e.time).format("MM/DD"),
-            ROCYear: moment(e.time).format("YYYY") - 1911,
-            theMonth: moment(e.time).format("MM"),
+            showTime: dayjs(e.time).format("MM/DD"),
+            ROCYear: dayjs(e.time).format("YYYY") - 1911,
+            theMonth: dayjs(e.time).format("MM"),
             showTitle: check ? e.details[0].description : e.invNum,
             showSeller: check ? e.sellerName : "無店家資料",
             showWay: check ? (e.type == 0 ? "載具" : "電子") : e.status, //假設載具為1
