@@ -11,11 +11,11 @@ import axios from "axios";
 import "./assets/CSS/app.sass";
 
 //時間套件
-import moment from "moment";
+import dayjs from "dayjs";
 
 createApp(App)
   .use(store)
   .use(router)
   .use(VueAxios, axios)
-  .use(moment)
+  .use(dayjs)
   .mount("#app");
